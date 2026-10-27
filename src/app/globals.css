@@ -1,0 +1,509 @@
+@import "tailwindcss";
+@import "@brandsync/wc/dist/brandsync-wc/brandsync-wc.css";
+@import "../styles/brandsync.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind is used for layout only (flex / grid / gap / spacing helpers). Every colour,
+ * radius, font and shadow resolves to a Brandsync token from styles/brandsync.css.
+ */
+@theme inline {
+  --font-sans: var(--bs-font-family-body);
+  --font-heading: var(--bs-font-family-heading);
+  --color-background: var(--bs-paper-bg-base);
+  --color-foreground: var(--bs-text-default);
+  --color-muted-foreground: var(--bs-text-muted);
+  --color-border: var(--bs-border-default);
+}
+
+@layer base {
+  html {
+    font-family: var(--bs-font-family-body);
+  }
+  body {
+    background: var(--bs-paper-bg-base);
+    color: var(--bs-text-default);
+    font-size: var(--bs-font-size-md);
+    line-height: var(--bs-line-height-normal);
+  }
+  html:not(.dark) body {
+    background: #ffffff;
+  }
+}
+
+/* Larger modal for the settings dialog */
+.settings-dialog::part(dialog) {
+  width: min(1200px, 95vw);
+  max-width: none;
+  height: min(800px, 92vh);
+  max-height: none;
+}
+.settings-dialog::part(body) {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Settings dialog tabs: subtle background instead of an underline */
+:is(.settings-dialog, .side-tabs) .bs-tabs {
+  border-bottom: 0;
+  gap: var(--bs-spacing-50);
+}
+:is(.settings-dialog, .side-tabs) .bs-tab {
+  border-radius: var(--bs-border-radius-100);
+}
+:is(.settings-dialog, .side-tabs) .bs-tab::after {
+  display: none;
+}
+:is(.settings-dialog, .side-tabs) .bs-tab--active {
+  background: var(--bs-surface-hover);
+}
+
+/* Settings dialog: vertical tab list as a side menu */
+:is(.settings-dialog, .side-tabs) .bs-tabs {
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  padding-right: var(--bs-spacing-150);
+  border-right: 1px solid var(--bs-border-default);
+}
+:is(.settings-dialog, .side-tabs) .bs-tab {
+  justify-content: flex-start;
+}
+:is(.settings-dialog, .side-tabs) .bs-tab {
+  gap: var(--bs-spacing-100);
+}
+
+/* Table headers have a light blue fill */
+.bs-table thead,
+.bs-table th {
+  background: color-mix(in srgb, var(--bs-information-50) 50%, white);
+  color: var(--bs-text-secondary);
+}
+.bs-table th {
+  font-size: var(--bs-font-size-sm);
+  font-weight: 500;
+}
+
+/* Light grey borders on all form fields */
+.bs-input {
+  border-color: var(--bs-border-default);
+}
+.bs-input:hover {
+  border-color: color-mix(in srgb, var(--bs-border-default) 60%, var(--bs-border-neutral-container));
+}
+bs-input,
+bs-select,
+bs-textarea {
+  --bs-input-field-border: var(--bs-border-default);
+  --bs-input-field-border-hover: color-mix(in srgb, var(--bs-border-default) 60%, var(--bs-border-neutral-container));
+}
+
+/* Table row icons sit bare, with no fixed-size tile around them */
+.bs-cell-icon {
+  background: transparent;
+  flex: none;
+  width: auto;
+  height: auto;
+}
+
+/* Squarer chips instead of fully rounded pills */
+.bs-chip {
+  border-radius: var(--bs-border-radius-100);
+}
+.bs-badge--tab {
+  border-radius: var(--bs-border-radius-100);
+}
+
+/* Tailwind's reset zeroes the padding Brandsync sets on the chip host, so set it again. */
+bs-chip-informative {
+  border-radius: var(--bs-border-radius-100);
+}
+bs-chip-informative.bs-chip-informative--icon {
+  padding-left: var(--bs-spacing-100);
+  padding-right: var(--bs-spacing-150);
+}
+bs-chip-informative.bs-chip-informative--text {
+  padding-left: var(--bs-spacing-200);
+  padding-right: var(--bs-spacing-200);
+}
+
+/* Keep identifiers such as batch and invoice numbers on one line */
+.bs-cell-primary--strong {
+  white-space: nowrap;
+}
+
+/* Underline the identifier on hover in clickable rows */
+.bs-table tr[data-interactive] .bs-cell-primary--strong:hover {
+  text-decoration: underline;
+}
+
+/* Cell padding: roomy enough to separate columns, tight enough to avoid sideways scrolling */
+.bs-table th,
+.bs-table td {
+  padding-inline: var(--bs-spacing-150);
+}
+
+/* Pull dialog content closer to the title */
+bs-dialog::part(header) {
+  padding-bottom: 0;
+}
+
+/* Lighter outline on row action buttons */
+.bs-cell-actions bs-button {
+  --bs-button-outlined-border: color-mix(in srgb, var(--bs-border-primary) 35%, white);
+}
+
+/* Compact table rows */
+.bs-table th,
+.bs-table td {
+  padding-block: var(--bs-spacing-100);
+}
+
+/* Connector line after a completed step */
+.bs-step-done {
+  --bs-stepper-step-connector-color: var(--bs-color-primary-default);
+}
+
+/* Filled indicator for the failed stepper step */
+.bs-step-error::part(icon) {
+  background: var(--bs-color-error-default);
+  color: #fff;
+}
+
+/* Date and invoice counts under each stepper step */
+.bs-step-detail::part(description) {
+  white-space: pre;
+  text-align: center;
+  font-weight: 500;
+  font-size: var(--bs-font-size-xs);
+  line-height: var(--bs-line-height-normal);
+}
+
+/* The date/time is the first line of the description; keep it secondary even on error steps. */
+.bs-step-detail::part(description)::first-line {
+  color: var(--bs-text-secondary);
+  font-weight: 400;
+}
+
+/* Partially sent: half-filled amber marker and amber text on the final step */
+.bs-step-partial::part(icon) {
+  background: linear-gradient(90deg, var(--bs-color-warning-default) 50%, transparent 50%);
+  border-color: var(--bs-color-warning-default);
+}
+.bs-step-partial::part(description) {
+  color: var(--bs-text-warning);
+}
+
+/* Failure note under a stepper step, e.g. "1 invoice failed" */
+.bs-step-note::part(description) {
+  color: var(--bs-text-error);
+  font-weight: 600;
+  font-size: var(--bs-font-size-xs);
+  line-height: var(--bs-line-height-normal);
+}
+
+/* Monochrome theme: neutral and brand scales are grey; status colours (success/error/warning/info) are kept. */
+:root,
+.dark {
+  --bs-neutral-25: #fafafa;
+  --bs-neutral-50: #f2f2f2;
+  --bs-neutral-100: #e5e5e5;
+  --bs-neutral-200: #cfcfcf;
+  --bs-neutral-300: #adadad;
+  --bs-neutral-400: #8a8a8a;
+  --bs-neutral-500: #707070;
+  --bs-neutral-600: #5c5c5c;
+  --bs-neutral-700: #474747;
+  --bs-neutral-800: #303030;
+  --bs-neutral-900: #1a1a1a;
+  --bs-neutral-950: #0d0d0d;
+
+  --bs-brand-50: #f2f2f2;
+  --bs-brand-100: #e5e5e5;
+  --bs-brand-200: #cfcfcf;
+  --bs-brand-300: #8a8a8a;
+  --bs-brand-400: #303030;
+  --bs-brand-500: #111111;
+  --bs-brand-600: #000000;
+  --bs-brand-700: #000000;
+  --bs-brand-800: #000000;
+  --bs-brand-900: #000000;
+  --bs-brand-950: #000000;
+}
+
+html:not(.dark) body,
+:root:not(.dark) .bs-page {
+  background: #f7f8fa;
+}
+
+/* Level 1 elevation; the table wrapper already reads this token. */
+:root {
+  --bs-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.1);
+}
+
+/* Secondary button: a darker grey fill with a soft border. */
+.secondary-gray {
+  --bs-button-neutral-container: #e4e4e4;
+  --bs-button-neutral-hover: #d8d8d8;
+  --bs-button-neutral-pressed: #cccccc;
+  --bs-border-neutral-container: #d0d0d0;
+  --bs-border-neutral-container-hover: #c2c2c2;
+  --bs-border-neutral-container-pressed: #b5b5b5;
+}
+
+/* Lighter chip backgrounds; the text colours stay as they are. */
+:root {
+  --bs-chip-bg-error-container: var(--bs-error-50);
+  --bs-chip-bg-warning-container: var(--bs-warning-50);
+  --bs-chip-bg-success-container: var(--bs-success-50);
+  --bs-chip-bg-info-container: var(--bs-information-50);
+}
+
+.bs-table th.batch-actions-col,
+.bs-table td.batch-actions-col { width: 1%; }
+
+/* Tables sit flat on the page: no outer border or shadow */
+.bs-table-wrapper {
+  border: 0;
+  box-shadow: none;
+  background: #fff;
+}
+
+/* Summary tiles on the batch page have no shadow */
+.bs-card--flat {
+  box-shadow: none;
+}
+
+/* Resolution guide button: 32px tall, blue text on a subtle blue tint */
+.guide-btn bs-button {
+  --bs-button-height-sm: var(--bs-spacing-400);
+  --bs-button-outlined-container: var(--bs-information-50);
+  --bs-button-outlined-border: transparent;
+  --bs-button-outlined-border-hover: transparent;
+  display: inline-flex;
+  background: var(--bs-information-50);
+  border-radius: var(--bs-button-radius, 8px);
+}
+
+/* Subtle red button on the red recovery banner, no border */
+.recovery-view-btn bs-button {
+  --bs-button-outlined-container: #f7d9d6;
+  --bs-button-outlined-border: transparent;
+  --bs-button-outlined-border-hover: transparent;
+  --bs-color-primary-default: var(--bs-text-error);
+  --bs-color-primary-hover: var(--bs-color-error-pressed);
+  --bs-color-primary-pressed: var(--bs-color-error-pressed);
+  display: inline-flex;
+  background: #f7d9d6;
+  border-radius: var(--bs-button-radius, 8px);
+}
+
+/* Buttons use a blue primary colour; the rest of the theme stays monochrome */
+bs-button {
+  --bs-color-primary-default: #1d5fd1;
+  --bs-color-primary-hover: #174fb0;
+  --bs-color-primary-pressed: #123f8e;
+  --bs-color-primary-focused: #1d5fd1;
+  --bs-button-primary-default: #1d5fd1;
+  --bs-button-primary-hover: #174fb0;
+  --bs-button-primary-pressed: #123f8e;
+  --bs-button-primary-focus: #1d5fd1;
+  --bs-border-primary-focus: #1d5fd1;
+}
+
+/* Settings side menu: a drawer sized to its column */
+.settings-nav {
+  --bs-navigation-drawer-width: 100%;
+  --bs-navigation-drawer-padding-y: 0;
+  --bs-navigation-drawer-padding-left: 0;
+  --bs-navigation-drawer-padding-right: 12px;
+  --bs-navigation-drawer-bg: transparent;
+  --bs-navigation-drawer-border: var(--bs-border-default);
+  --bs-navigation-drawer-gap: 8px;
+}
+.settings-nav::part(title) {
+  display: none;
+}
+.settings-nav bs-navigation-drawer-item svg {
+  width: 18px;
+  height: 18px;
+}
+.settings-nav bs-navigation-drawer-item {
+  --bs-navigation-drawer-item-bg-selected: #edf0fa;
+  --bs-navigation-drawer-item-bg-selected-hover: #e2e8f7;
+  --bs-navigation-drawer-item-bg-selected-pressed: #d6def2;
+  --bs-navigation-drawer-item-bg-selected-focus: #edf0fa;
+}
+
+/* Outlined buttons: black text with a light grey border */
+bs-button.app-outlined-button {
+  --bs-color-primary-default: #1a1a1a;
+  --bs-color-primary-pressed: #1a1a1a;
+  --bs-button-outlined-border: #d9d9d9;
+  --bs-button-outlined-border-hover: #c8c8c8;
+}
+
+/* Only the active tab's count badge is light blue */
+bs-tab[selected] .bs-badge.bs-badge--tab {
+  background: #edf0fa;
+}
+
+/* Switches use the blue primary colour when on */
+.bs-switch {
+  --bs-color-primary-default: #1d5fd1;
+  --bs-color-primary-hover: #174fb0;
+}
+
+/* Status chips: darker text for at least 7:1 contrast on their light backgrounds */
+bs-chip-informative {
+  --bs-chip-text-info: #00518c;
+  --bs-chip-text-success: #0d5a3f;
+  --bs-chip-text-warning: #664700;
+  --bs-chip-text-error: #961c1f;
+}
+
+/* Table rows are transparent so the page colour shows through, with a soft hover tint */
+.bs-table tbody tr {
+  background: transparent;
+}
+.bs-table tbody tr:hover {
+  background: #eef0f5;
+}
+
+/* Table header background */
+.bs-table thead th {
+  background: #eef0f5;
+}
+
+/* Icon-only action buttons get a light grey border */
+.bs-btn--icon {
+  border-color: var(--bs-border-default);
+}
+
+/* Active tabs use the blue primary colour */
+bs-inline-tab {
+  --bs-inline-tab-bg-default: #ebeff2;
+  --bs-inline-tab-bg-selected: #fff;
+  --bs-inline-tab-bg-selected-hover: #fff;
+  --bs-inline-tab-bg-selected-focus: #fff;
+  --bs-inline-tab-bg-selected-pressed: #fff;
+  --bs-inline-tab-color-selected: #1a1a1a;
+}
+bs-tabs:has(bs-inline-tab)::part(tablist) {
+ 
+bs-tabs {
+  --bs-tabs-inline-tab-bg: #ebeff2;
+} padding: 4px;
+}
+.bs-tab--active {
+  color: #1d5fd1;
+}
+.bs-tab--active:after {
+  background: #1d5fd1;
+}
+bs-tabs,
+bs-tab,
+bs-inline-tab {
+  --bs-color-primary-default: #1d5fd1;
+  --bs-color-primary-hover: #174fb0;
+  --bs-color-primary-pressed: #123f8e;
+  --bs-color-primary-focused: #1d5fd1;
+  --bs-text-action: #1d5fd1;
+  --bs-border-primary: #1d5fd1;
+}
+
+/* Native primary buttons are blue when enabled; disabled keeps the grey disabled style */
+.bs-btn--primary:not(:disabled) {
+  background: #1d5fd1;
+  border-color: #1d5fd1;
+}
+.bs-btn--primary:hover:not(:disabled) {
+  background: #174fb0;
+  border-color: #174fb0;
+}
+.bs-btn--primary:active:not(:disabled) {
+  background: #123f8e;
+  border-color: #123f8e;
+}
+
+/* Global search results */
+.global-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--bs-spacing-150);
+  width: 100%;
+  padding: var(--bs-spacing-100) var(--bs-spacing-150);
+  border-radius: var(--bs-border-radius-100);
+  text-align: left;
+  font-size: var(--bs-font-size-sm);
+}
+.global-search-result:hover,
+.global-search-result:focus-visible {
+  background: var(--bs-surface-hover);
+}
+
+/* Expandable header search: an icon that grows into a field, with results in a dropdown */
+.global-search {
+  position: relative;
+}
+.global-search__field {
+  display: flex;
+  align-items: center;
+  gap: var(--bs-spacing-50);
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius-100);
+  transition: border-color var(--bs-duration) ease;
+}
+.global-search[data-open] .global-search__field {
+  border-color: var(--bs-border-default);
+  background: var(--bs-surface-base);
+}
+.global-search__input {
+  width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: var(--bs-font-size-sm);
+  color: var(--bs-text-default);
+  transition: width 200ms var(--bs-easing-standard);
+}
+.global-search[data-open] .global-search__input {
+  width: min(22rem, 40vw);
+}
+.global-search__results {
+  position: absolute;
+  top: calc(100% + var(--bs-spacing-100));
+  right: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bs-spacing-150);
+  width: min(26rem, 90vw);
+  max-height: 24rem;
+  overflow-y: auto;
+  padding: var(--bs-spacing-100);
+  border: 1px solid var(--bs-border-default);
+  border-radius: var(--bs-border-radius-150);
+  background: var(--bs-surface-raised);
+  box-shadow: var(--bs-shadow-xs);
+}
+@media (prefers-reduced-motion: reduce) {
+  .global-search__input { transition: none; }
+}
+
+/* Progress bars use the same blue as primary buttons; a finished bar stays green */
+.bs-progress-fill {
+  background: #1d5fd1;
+}
+.bs-progress-fill--success {
+  background: var(--bs-color-success-default);
+}
+
+/* Dashboard cards sit flat: no shadow at rest or on hover */
+.bs-card,
+a.bs-card:hover,
+.bs-card--interactive:hover {
+  box-shadow: none;
+}
